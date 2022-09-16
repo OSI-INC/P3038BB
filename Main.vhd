@@ -11,6 +11,8 @@
 -- asserted only for one CPU clock cycle, we now have DMRST set HI or LO by a write to
 -- the dm_reset register. We change the assembler code to write, wait, and write again.
 
+-- V8.4, 16-SEP-22: Add reset value 'Z' to RECEIVED_pin and INCOMING_pin.
+
 -- Global constants and types.  
 library ieee;  
 use ieee.std_logic_1164.all;
@@ -629,6 +631,8 @@ begin
 			DMRST <= '1';
 			DJRRST <= false;
 			RCV_RST_CPU <= false;
+			INCOMING_pin <= 'Z';
+			RECEIVED_pin <= 'Z';
 			for i in 1 to 15 loop indicator_control(i) <= '0'; end loop;
 		elsif falling_edge(PCK) then
 			irq_rst <= zero_data_byte;
