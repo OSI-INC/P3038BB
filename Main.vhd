@@ -11,7 +11,9 @@
 -- asserted only for one CPU clock cycle, we now have DMRST set HI or LO by a write to
 -- the dm_reset register. We change the assembler code to write, wait, and write again.
 
--- V8.4, 16-SEP-22: Add reset value 'Z' to RECEIVED_pin and INCOMING_pin.
+-- V8.4, 16-SEP-22: Add reset value high-impedance for RECEIVED_pin and INCOMING_pin. 
+-- Prior ommission of explicit reset values was causing RECEIVED_pin to be driven 
+-- HI by the base board, stopping all detector readout.
 
 -- Global constants and types.  
 library ieee;  
