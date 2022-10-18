@@ -62,7 +62,7 @@ entity main is
 -- Version numbers.
 	constant hardware_id : integer := 38;
 	constant hardware_version : integer := 2;
-	constant firmware_version : integer := 7;
+	constant firmware_version : integer := 8;
 
 -- Configuration of OSR8.
 	constant prog_addr_len : integer := 13;
@@ -194,8 +194,8 @@ architecture behavior of main is
 	constant cont_djr_addr : integer := 3; -- Device Job Register (Read/Write)
 	constant cont_hv_addr : integer := 18; -- Hardware Version (Read)
 	constant cont_fv_addr : integer := 19; -- Firmware Version (Read)
-	constant cont_crhi_addr : integer := 32; -- Command Ragister HI (Write)
-	constant cont_crlo_addr : integer := 33; -- Command Ragister LO (Write)
+	constant cont_crhi_addr : integer := 32; -- Command Register HI (Write)
+	constant cont_crlo_addr : integer := 33; -- Command Register LO (Write)
 	constant cont_rc3_addr : integer := 34; -- Repeat Counter Byte 3 (Write)
 	constant cont_rc2_addr : integer := 35; -- Repeat Counter Byte 2 (Write)
 	constant cont_rc1_addr : integer := 36; -- Repeat Counter Byte 1 (Write)
