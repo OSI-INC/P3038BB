@@ -13,7 +13,8 @@
 
 -- V8.4, 16-SEP-22: Add reset value high-impedance for RECEIVED_pin and INCOMING_pin. 
 -- Prior ommission of explicit reset values was causing RECEIVED_pin to be driven 
--- HI by the base board, stopping all detector readout.
+-- HI by the base board, stopping all detector readout. Remove the repeat counter
+-- from the controller interface.
 
 -- Global constants and types.  
 library ieee;  
@@ -165,13 +166,6 @@ architecture behavior of main is
 	constant relay_crhi_addr : integer := 15; -- Relay Command Register HI (Read)
 	constant relay_crlo_addr : integer := 16; -- Relay Command Register LO (Read)
 	constant relay_djr_rst_addr : integer := 17; -- Reset Relay Device Job Register (Write)
-	constant relay_rc3_addr : integer := 18; -- Repeat Counter Byte 3 (Read)
-	constant relay_rc2_addr : integer := 19; -- Repeat Counter Byte 2 (Read)
-	constant relay_rc1_addr : integer := 20; -- Repeat Counter Byte 1 (Read)
-	constant relay_rc0_addr : integer := 21; -- Repeat Counter Byte 0 (Read)
-	constant fifo_cnt2_addr : integer := 22; -- Fifo Message Count Byte 2 (Read)
-	constant fifo_cnt1_addr : integer := 23; -- Fifo Message Count Byte 1 (Read)
-	constant fifo_cnt0_addr : integer := 24; -- Fifo Message Count Byte 0 (Read)
 	constant incoming_addr : integer := 25; -- Assert INCOMING (Read/Write)
 	constant received_addr : integer := 26; -- Assert RECEIVED (Read/Write)
 	constant irq_tmr2_max_addr : integer := 27; -- Timer Two Period Minus One (Read/Write)
@@ -586,10 +580,6 @@ begin
 			when relay_djr_addr => cpu_data_in <= cont_djr;
 			when relay_crhi_addr => cpu_data_in <= cont_cr(15 downto 8);
 			when relay_crlo_addr => cpu_data_in <= cont_cr(7 downto 0);
-			when relay_rc3_addr => cpu_data_in <= cont_rc(31 downto 24);
-			when relay_rc2_addr => cpu_data_in <= cont_rc(23 downto 16);
-			when relay_rc1_addr => cpu_data_in <= cont_rc(15 downto 8);
-			when relay_rc0_addr => cpu_data_in <= cont_rc(7 downto 0);
 			when incoming_addr => 
 				if (INCOMING = '1') then
 					cpu_data_in <= one_data_byte;
@@ -602,11 +592,6 @@ begin
 				else
 					cpu_data_in <= zero_data_byte;
 				end if;
-			when fifo_cnt2_addr => 
-				cpu_data_in(7 downto 5) <= "000";
-				cpu_data_in(4 downto 0) <= fifo_byte_count(20 downto 16);
-			when fifo_cnt1_addr => cpu_data_in <= fifo_byte_count(15 downto 8);
-			when fifo_cnt0_addr => cpu_data_in <= fifo_byte_count(7 downto 0);
 			when others => cpu_data_in <= max_data_byte;
 			end case;
 		when others =>
@@ -780,7 +765,7 @@ begin
 	-- mere act of reading or writing from a location causes a flag to be set or 
 	-- cleared. Most registers appear in the controller CPU's address space as well,
 	-- and are the means by which the relay and controller communicate. In the case
-	-- of reads from the message buffer, the relay must make sure the byte is 
+	-- of reads from the FIFO message buffer, the relay must make sure the byte is 
 	-- available before it reads, and does so by writing any value to the FIFO Data 
 	-- Strobe location and then polling the same location until it is non-zero. The
 	-- initial write sets the Message Read Strobe (MRDS), which instructs the 
@@ -816,10 +801,6 @@ begin
 				when cont_djr_addr => cont_djr <= cont_data;
 				when cont_crhi_addr => cont_cr(15 downto 8) <= cont_data;
 				when cont_crlo_addr => cont_cr(7 downto 0) <= cont_data;
-				when cont_rc3_addr => cont_rc(31 downto 24) <= cont_data;
-				when cont_rc2_addr => cont_rc(23 downto 16) <= cont_data;
-				when cont_rc1_addr => cont_rc(15 downto 8) <= cont_data;
-				when cont_rc0_addr => cont_rc(7 downto 0) <= cont_data;
 				when cont_srst_addr => RCV_RST_RELAY <= true;
 				when cont_fifo_ds_addr => MRDS <= true;
 				end case;
