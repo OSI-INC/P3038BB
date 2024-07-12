@@ -1,20 +1,8 @@
 -- <pre> ALT Base Board (A3038BB) Controller Firmware, Toplevel Unit
 -- Repository https://github.com/OSI-INC/P3038BB. 
 
--- V8.1, 14-SEP-22: Create Git repository. Compile and test, same functionality as
--- pre-repository version A07.
-
--- V8.2, 15-SEP-22: Update CPU to OSR8V3. Make aesthetic changes that make 
--- no difference to functionality. Test and commit.
-
--- V8.3, 15-SEP-22: Alter Detector Module Reset (DMRST) behavior. Instead of remaining
--- asserted only for one CPU clock cycle, we now have DMRST set HI or LO by a write to
--- the dm_reset register. We change the assembler code to write, wait, and write again.
-
--- V8.4, 16-SEP-22: Add reset value high-impedance for RECEIVED_pin and INCOMING_pin. 
--- Prior ommission of explicit reset values was causing RECEIVED_pin to be driven 
--- HI by the base board, stopping all detector readout. Remove the repeat counter
--- from the controller interface.
+-- [12-JUL=24] V1.1 Standalone based on V8.4 ALT code. Make DC1-DC5 
+-- high-impedance.
 
 -- Global constants and types.  
 library ieee;  
@@ -618,8 +606,6 @@ begin
 			DMRST <= '1';
 			DJRRST <= false;
 			RCV_RST_CPU <= false;
-			INCOMING_pin <= 'Z';
-			RECEIVED_pin <= 'Z';
 			for i in 1 to 15 loop indicator_control(i) <= '0'; end loop;
 		elsif falling_edge(PCK) then
 			irq_rst <= zero_data_byte;
@@ -641,21 +627,8 @@ begin
 							mwr_data <= cpu_data_out;
 							MWRS <= true;
 						when dm_reset_addr => DMRST <= cpu_data_out(0);
-						when dm_complete_addr => DRC <= cpu_data_out(0);
 						when dm_strobe_addr => DSU <= cpu_data_out(0);
 						when relay_djr_rst_addr => DJRRST <= true;
-						when incoming_addr => 
-							if (cpu_data_out(0) = '1') then
-								INCOMING_pin <= '1';
-							else
-								INCOMING_pin <= 'Z';
-							end if;
-						when received_addr => 
-							if (cpu_data_out(0) = '1') then
-								RECEIVED_pin <= '1';
-							else
-								RECEIVED_pin <= 'Z';
-							end if;
 						when indicators_addr + 1 to indicators_addr + 15 =>
 							indicator_control(to_integer(unsigned(cpu_addr(3 downto 0)))) 
 								<= cpu_data_out(0);
@@ -881,9 +854,6 @@ begin
 			indicators(18) <= to_std_logic(not SHOW); 
 		end if;
 		
-		HIDEDM <= to_std_logic(HIDE);
-		SHOWDM <= to_std_logic(SHOW);
-
 		-- Set the indicator lamps according to the indicator control
 		-- and the HIDE and SHOW signals. The indicator is on when the
 		-- indicator output is LO.
@@ -930,6 +900,13 @@ begin
 	
 	-- Configure lamp. Turns on when the config lamp output goes low.
 	config_lamp <= to_std_logic(switches(4) = '0'); -- Configuration lamp and switch
+	
+	-- Standalone Code
+	DRC <= 'Z';
+	HIDEDM <= 'Z';
+	SHOWDM <= 'Z';
+	INCOMING_pin <= 'Z';
+	RECEIVED_pin <= 'Z';
 	
 	-- Test points. We have TP1..TP3 showing the microprocessor-controlled registers 
 	-- zero through two. We have TP4 showing us any changes in the upstream data bus.
