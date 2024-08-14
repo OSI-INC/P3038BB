@@ -16,6 +16,8 @@
 -- HI by the base board, stopping all detector readout. Remove the repeat counter
 -- from the controller interface.
 
+-- V8.4, 14-AUG-24: Increase DMCK drive to 24 mA for 40-Ohm termination.
+
 -- Global constants and types.  
 library ieee;  
 use ieee.std_logic_1164.all;
