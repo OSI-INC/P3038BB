@@ -16,7 +16,7 @@
 -- HI by the base board, stopping all detector readout. Remove the repeat counter
 -- from the controller interface.
 
--- V8.4, 14-AUG-24: Increase DMCK drive to 24 mA for 40-Ohm termination. Mark this
+-- V8.5, 15-AUG-24: Increase DMCK drive to 24 mA for 40-Ohm termination. Mark this
 -- by incrementing hardware version to 3.
 
 -- Global constants and types.  
