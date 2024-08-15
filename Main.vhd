@@ -16,7 +16,8 @@
 -- HI by the base board, stopping all detector readout. Remove the repeat counter
 -- from the controller interface.
 
--- V8.4, 14-AUG-24: Increase DMCK drive to 24 mA for 40-Ohm termination.
+-- V8.4, 14-AUG-24: Increase DMCK drive to 24 mA for 40-Ohm termination. Mark this
+-- by incrementing hardware version to 3.
 
 -- Global constants and types.  
 library ieee;  
@@ -64,7 +65,7 @@ entity main is
 
 -- Version numbers.
 	constant hardware_id : integer := 38;
-	constant hardware_version : integer := 2;
+	constant hardware_version : integer := 3;
 	constant firmware_version : integer := 8;
 
 -- Configuration of OSR8.
